@@ -15,4 +15,11 @@ c<-ggplot(nmmaps, aes(Julian, CO2, color=factor(Chamber)))+geom_point()
 #c<-c+ggtitle('Stem Respiration')
 c<-c+labs(x="Julian Date", y=expression(paste("Stem Respiration ( CO2", mu ~ g/m^2 , "h )")), title="Stem Respiration")
 c
-grid.arrange(g, c, nrow=2, main = "Stem Gas Fluxes")
+d<-grid.arrange(g, c, nrow=2, main = "Stem Gas Fluxes")
+ggsave("plot.pdf", width=4, height=4)
+
+autofacet<-read.csv("automatedFacet.csv", as.is=T)
+gf<-ggplot(autofacet, aes(Julian, Flux, color=factor(Chamber)))+geom_point()
+gf
+gf + facet_grid(Gas ~ ., scales="free_y")
+gf<-gf+labs(x="Julian Date", y=expression(paste("Gas Fluxes (", mu ~ g/m^2 , "h )")), title="Stem Gas Fluxes")
