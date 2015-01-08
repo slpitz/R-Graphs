@@ -39,6 +39,41 @@ gf + facet_grid(Gas ~ ., scales="free_y") #scales="free_y" allows each graph's y
 transect<-read.csv("AllData.csv", as.is=T) #load files
 head(transect) #show beginning of file
 transect$DateF<-as.Date(transect$DateF)
+transect["Eco"] <- NA # That creates the new column filled with "NA"
+head(transect)
+#if(transect$TreeID=="10127") transect$Eco=="mid"
+transect$Eco[transect$TreeID==10127] <- "mid"
+transect$Eco[transect$TreeID==10206] <- "wetland"
+transect$Eco[transect$TreeID==10210] <- "wetland"
+transect$Eco[transect$TreeID==10212] <- "wetland"
+transect$Eco[transect$TreeID==10214] <- "wetland"
+transect$Eco[transect$TreeID==10315] <- "wetland"
+transect$Eco[transect$TreeID==10316] <- "wetland"
+transect$Eco[transect$TreeID==10319] <- "wetland"
+
+transect$Eco[transect$TreeID==12000] <- "mid"
+transect$Eco[transect$TreeID==12001] <- "upland"
+transect$Eco[transect$TreeID==12002] <- "upland"
+transect$Eco[transect$TreeID==12003] <- "upland"
+transect$Eco[transect$TreeID==12004] <- "mid"
+transect$Eco[transect$TreeID==12005] <- "mid"
+transect$Eco[transect$TreeID==12006] <- "upland"
+transect$Eco[transect$TreeID==12007] <- "mid"
+transect$Eco[transect$TreeID==12008] <- "upland"
+transect$Eco[transect$TreeID==12009] <- "mid"
+transect$Eco[transect$TreeID==12010] <- "upland"
+transect$Eco[transect$TreeID==12011] <- "upland"
+transect$Eco[transect$TreeID==12012] <- "upland"
+transect$Eco[transect$TreeID==12013] <- "upland"
+transect$Eco[transect$TreeID==12014] <- "upland"
+transect$Eco[transect$TreeID==12015] <- "upland"
+transect$Eco[transect$TreeID==12016] <- "upland"
+transect$Eco[transect$TreeID==12017] <- "upland"
+transect$Eco[transect$TreeID==12018] <- "upland"
+transect$Eco[transect$TreeID==12019] <- "upland"
+transect$Eco[transect$TreeID==12020] <- "upland"
+transect$Eco[transect$TreeID==12021] <- "upland"
+transect$Eco
 all<-ggplot(transect, aes(DateF, Methane, color=factor(Type)))+geom_point()
 all
 
@@ -89,4 +124,11 @@ logtreelogmoisture<-ggplot(treedata2014, aes(logMoist, logMethaneFlux))+geom_poi
 logtreelogmoisture<-logtreelogmoisture+labs(x="log (Soil Moisture (VMC%))", y=expression(paste("log(Stem Methane Flux (", mu ~ g/m^2 , "h ))")), title="2014 - log(Stem Gas Flux) v. log(VMC)")
 logtreelogmoisture
 
+#2014 upland data
+data2014<-transect[transect$Year=="2014",]
+upplot<-data2014[data2014$Eco=="upland",]
+up<-ggplot(upplot, aes(DateF, Methane, color=factor(Type)))+geom_point()
+up<-up+labs(x="Date", y=expression(paste("Gas Fluxes (", mu ~ g/m^2 , "h )")), title="2014 - Stem Gas Fluxes - Upland All RSQ")
+up<-up+theme(legend.title = element_text(colour="chocolate", size=16, face="bold"))+scale_color_discrete(name="Flux Type")
+up
 
