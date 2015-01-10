@@ -4,6 +4,8 @@
 library(ggplot2)
 library(grid)
 library(gridExtra)
+library(plyr)
+
 nmmaps<-read.csv("automated.csv", as.is=T) #load files
 head(nmmaps) #show beginning of file
 #g<-ggplot(nmmaps, aes(Julian, CH4))+geom_point(color="firebrick")
@@ -73,7 +75,23 @@ transect$Eco[transect$TreeID==12018] <- "upland"
 transect$Eco[transect$TreeID==12019] <- "upland"
 transect$Eco[transect$TreeID==12020] <- "upland"
 transect$Eco[transect$TreeID==12021] <- "upland"
-transect$Eco
+
+#change rounds
+transect$Round[transect$DateF=="2014-05-22"] <- 7
+transect$Round[transect$DateF=="2014-05-23"] <- 7
+transect$Round[transect$DateF=="2014-06-20"] <- 8
+transect$Round[transect$DateF=="2014-07-08"] <- 9
+transect$Round[transect$DateF=="2014-07-10"] <- 9
+transect$Round[transect$DateF=="2014-08-20"] <- 10
+transect$Round[transect$DateF=="2014-08-21"] <- 10
+transect$Round[transect$DateF=="2014-08-28"] <- 10
+transect$Round[transect$DateF=="2014-08-29"] <- 10
+transect$Round[transect$DateF=="2014-08-30"] <- 10
+transect$Round[transect$DateF=="2014-09-17"] <- 11
+transect$Round[transect$DateF=="2014-09-18"] <- 11
+transect$Round[transect$DateF=="2014-09-19"] <- 11
+transect$Round[transect$DateF=="2014-09-22"] <- 11
+
 all<-ggplot(transect, aes(DateF, Methane, color=factor(Type)))+geom_point()
 all
 
@@ -131,4 +149,39 @@ up<-ggplot(upplot, aes(DateF, Methane, color=factor(Type)))+geom_point()
 up<-up+labs(x="Date", y=expression(paste("Gas Fluxes (", mu ~ g/m^2 , "h )")), title="2014 - Stem Gas Fluxes - Upland All RSQ")
 up<-up+theme(legend.title = element_text(colour="chocolate", size=16, face="bold"))+scale_color_discrete(name="Flux Type")
 up
+
+# Run the functions length, mean, and sd on the value of "flux" for each group, 
+# broken down by type, round
+MethaneSum <- ddply(data2014, c("Type", "Round", "Eco"), summarise,
+               N    = length(Methane),
+               mean = mean(Methane),
+               sd   = sd(Methane),
+               se   = sd / sqrt(N) )
+MethaneSum
+
+DateSum <- ddply(data2014, c("Type", "Round", "Eco"), summarise,
+                    N    = length(DateF),
+                    mean = mean(DateF),
+                    sd   = sd(DateF),
+                    se   = sd / sqrt(N) )
+DateSum
+
+# merge two data frames by Round and Eco
+total <- merge(MethaneSum, DateSum, by=c("Round","Eco","Type"))
+total
+
+#Plot summaries by "ecosystem" data
+sup<-ggplot(total, aes(mean.y, mean.x, color=factor(Type)))+geom_point(aes(shape=Eco),size = 4)+geom_errorbar(aes(ymin=mean.x-se.x, ymax=mean.x+se.x), width=.1)
+  #+geom_point(aes(shape=Eco),size = 4)
+sup<-sup+labs(x="Date", y=expression(paste("Gas Fluxes (", mu ~ g/m^2 , "h )")), title="2014 - Stem Gas Fluxes - All Ecosystems - All RSQ")
+sup<-sup+theme(legend.title = element_text(colour="chocolate", size=16, face="bold"))+scale_color_discrete(name="Flux Type")
+sup
+
+#Plot summaries by "ecosystem" data
+uptotal<-total[total$Eco=="upland",]
+supup<-ggplot(uptotal, aes(mean.y, mean.x, color=factor(Type)))+geom_point(aes(shape=Eco),size = 4)+geom_errorbar(aes(ymin=mean.x-se.x, ymax=mean.x+se.x), width=.1)
+#+geom_point(aes(shape=Eco),size = 4)
+supup<-supup+labs(x="Date", y=expression(paste("Gas Fluxes (", mu ~ g/m^2 , "h )")), title="2014 - Stem Gas Fluxes - Upland All RSQ")
+supup<-supup+theme(legend.title = element_text(colour="chocolate", size=16, face="bold"))+scale_color_discrete(name="Flux Type")
+supup
 
