@@ -1,4 +1,4 @@
 R-Graphs
 ========
 
-Graphs fro transect data
+Graphs for transect data
